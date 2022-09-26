@@ -1,9 +1,3 @@
-<div *ngFor="let string of greetings">
-  <div class="container">
-    <p>{{ string }}</p>
-  </div>
-</div>
-
 <form #loginForm="ngForm">
   <div>
     <br />
@@ -25,3 +19,10 @@
     </button>
   </div>
 </form>
+
+<h3>Messages:</h3>
+<div *ngFor="let string of greetings">
+  <div class="container">
+    <p>{{ string }}</p>
+  </div>
+</div>
