@@ -1,0 +1,14 @@
+<mat-toolbar>
+  <a class="logo" routerLink="/">
+    <img src="/assets/img/acheron-logo.png" alt="logo" />
+  </a>
+  <span>Notify Chat App</span>
+  <span class="spacer"></span>
+  <span>{{ firstName }}</span>
+  <button mat-icon-button aria-label="user profile">
+    <mat-icon>account_box</mat-icon>
+  </button>
+  <button class="logout-button" mat-button color="primary" (click)="logout()">
+    Logout
+  </button>
+</mat-toolbar>

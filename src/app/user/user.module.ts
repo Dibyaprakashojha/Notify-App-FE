@@ -8,7 +8,6 @@ import { initializer } from './keycloak-initializer';
 @NgModule({
   declarations: [LoginComponent],
   imports: [CommonModule, SharedModule, KeycloakAngularModule],
-  exports: [SharedModule],
   providers: [
     {
       provide: APP_INITIALIZER,

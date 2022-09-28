@@ -1,28 +1,45 @@
-<form #loginForm="ngForm">
-  <div>
-    <br />
-    <textarea
-      autocomplete="off"
-      placeholder="Type Your Message..."
-      name="newmessage"
-      [(ngModel)]="newmessage"
-      required
-    ></textarea>
-    <button
-      mat-raised-button
-      color="accent"
-      class="btn"
-      (click)="sendMessage()"
-      [disabled]="!loginForm.valid"
-    >
-      Send
-    </button>
+<div class="container">
+  <div class="header">
+    <mat-toolbar>
+      <button mat-icon-button aria-label="user profile">
+        <mat-icon>account_box</mat-icon>
+        <span> John </span>
+      </button>
+    </mat-toolbar>
   </div>
-</form>
+  <div class="body">
+    <div class="message-container" *ngFor="let message of messages">
+      <div class="message">
+        <p>{{ message }}</p>
+      </div>
+    </div>
+  </div>
 
-<h3>Messages:</h3>
-<div *ngFor="let string of greetings">
-  <div class="container">
-    <p>{{ string }}</p>
+  <div class="footer">
+    <form #loginForm="ngForm">
+      <div class="textarea">
+        <input
+          matInput
+          type="text"
+          autocomplete="off"
+          placeholder="Type Your Message..."
+          name="newmessage"
+          [(ngModel)]="newmessage"
+          required
+        />
+      </div>
+
+      <div class="send-button">
+        <button
+          mat-fab
+          color="warn"
+          class="send-btn"
+          (click)="sendMessage()"
+          [disabled]="!loginForm.valid"
+        >
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+    </form>
   </div>
 </div>

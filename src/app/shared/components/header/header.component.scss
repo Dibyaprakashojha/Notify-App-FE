@@ -1,0 +1,33 @@
+@use '@angular/material' as mat;
+@import "src/scss/variables";
+
+mat-toolbar {
+  font-size: $body-font-size;
+  height: auto;
+  background: $white;
+  border-bottom: $border;
+  .spacer {
+    flex: 1;
+  }
+  .mat-icon-button {
+    background: transparent;
+  }
+  .logo {
+    line-height: 0.5rem;
+    img {
+      height: 1.5rem;
+    }
+  }
+}
+
+.logout-button {
+  height: 25px;
+  width: 80px;
+  border-radius: 4px;
+  border: 0.25px solid;
+}
+
+.mat-button {
+  text-align: center;
+  line-height: 24px;
+}

@@ -5,10 +5,10 @@ import * as SockJS from 'sockjs-client';
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.scss'],
+  styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent implements OnInit {
-  greetings: string[] = [];
+  messages: string[] = ['Hi', 'Good morning', 'How are you ?'];
   disabled = true;
   newmessage: string = '';
   private stompClient!: Stomp.Client;
@@ -23,7 +23,7 @@ export class ChatComponent implements OnInit {
     this.disabled = !connected;
 
     if (connected) {
-      this.greetings = [];
+      this.messages = [];
     }
   }
 
@@ -32,17 +32,16 @@ export class ChatComponent implements OnInit {
     this.stompClient = Stomp.over(socket);
 
     const _this = this;
-    this.stompClient.connect({}, function (frame?: Stomp.Frame) {
+    this.stompClient.connect({}, function(frame?: Stomp.Frame) {
       console.log('Connected: ' + frame);
 
-      _this.stompClient.subscribe(
-        '/start/initial',
-        function (hello: Stomp.Message) {
-          console.log(JSON.parse(hello.body));
+      _this.stompClient.subscribe('/start/initial', function(
+        hello: Stomp.Message
+      ) {
+        console.log(JSON.parse(hello.body));
 
-          _this.showMessage(JSON.parse(hello.body));
-        }
-      );
+        _this.showMessage(JSON.parse(hello.body));
+      });
     });
   }
 
@@ -57,6 +56,6 @@ export class ChatComponent implements OnInit {
   }
 
   showMessage(message: string) {
-    this.greetings.push(message);
+    this.messages.push(message);
   }
 }
