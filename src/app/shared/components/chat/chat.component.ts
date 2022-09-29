@@ -8,7 +8,68 @@ import * as SockJS from 'sockjs-client';
   styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent implements OnInit {
-  messages: string[] = ['Hi', 'Good morning', 'How are you ?'];
+  messages: string[] = [
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?',
+    'Hi',
+    'Good morning',
+    'How are you ?'
+  ];
   disabled = true;
   newmessage: string = '';
   private stompClient!: Stomp.Client;
@@ -32,30 +93,33 @@ export class ChatComponent implements OnInit {
     this.stompClient = Stomp.over(socket);
 
     const _this = this;
-    this.stompClient.connect({}, function(frame?: Stomp.Frame) {
+    this.stompClient.connect({}, (frame?: Stomp.Frame) => {
       console.log('Connected: ' + frame);
-
-      _this.stompClient.subscribe('/start/initial', function(
-        hello: Stomp.Message
-      ) {
-        console.log(JSON.parse(hello.body));
-
-        _this.showMessage(JSON.parse(hello.body));
-      });
+      _this.stompClient.subscribe(
+        '/current/initial',
+        (hello: Stomp.Message) => {
+          console.log(JSON.parse(hello.body));
+          const message = JSON.parse(hello.body);
+          if (message.to === 'Brian') {
+            _this.showMessage(JSON.parse(hello.body).message);
+          }
+        }
+      );
     });
   }
 
   sendMessage() {
-    this.stompClient.send(
-      '/current/resume',
-      {},
-      JSON.stringify(this.newmessage)
-    );
+    const chatObj = {
+      from: 'John',
+      to: 'Brian',
+      message: this.newmessage
+    };
+    this.stompClient.send('/start/resume', {}, JSON.stringify(chatObj));
     this.showMessage(this.newmessage);
     this.newmessage = '';
   }
 
   showMessage(message: string) {
-    this.messages.push(message);
+    this.messages.unshift(message);
   }
 }

@@ -1,6 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import * as Keycloak from 'keycloak-js';
+import { filter, map, Observable } from 'rxjs';
+import { UserService } from '../../services/user.service';
+import { User } from '../../user';
 
 @Component({
   selector: 'app-navbar',
@@ -8,13 +11,23 @@ import * as Keycloak from 'keycloak-js';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
-  constructor(private _httpClient: HttpClient) {}
-  private _url = 'http://localhost:7688/admin/realms/master/users';
-  ngOnInit(): void {
-    this._httpClient.get(this._url).subscribe(data => {
-      console.log(data);
-    });
+  users: string[] = [];
+  constructor(private _userService: UserService) {}
 
-    // let kc = Keycloak.getInstance("");
+  ngOnInit(): void {
+    this._userService
+      .getAllUsers()
+      .pipe(
+        map((user): User[] => {
+          console.log(user);
+          return user;
+        })
+      )
+      .subscribe(data => {
+        console.log(`data: ${data}`);
+      });
   }
 }
+// .subscribe(data => {
+//   console.log(`User:`, JSON.stringify(data));
+// });
