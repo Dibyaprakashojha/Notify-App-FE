@@ -6,10 +6,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./layout.component.scss']
 })
 export class LayoutComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
+  ngOnInit(): void {}
 
-  ngOnInit(): void {
-  }
+  conversation!: any;
 
+  onConversationSelected = (conversation: any) => {
+    console.log(`Hi in layout`);
+    this.conversation = conversation;
+  };
 }

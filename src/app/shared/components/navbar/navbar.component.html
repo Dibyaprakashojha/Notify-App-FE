@@ -7,9 +7,19 @@
       </button>
     </mat-toolbar>
   </div>
-  <div class="users-list"></div>
-</div>
 
-<!-- <h1 *ngFor="let user of users">
-  {{ user }}
-</h1> -->
+  <div class="sideBarContent">
+    <div
+      class="conversations"
+      *ngFor="let user of users"
+      (click)="conversationClicked.emit(user)"
+    >
+      <div class="picture">
+        <img src="..\..\assets\img\icons8-test-account-96.png" alt="" />
+      </div>
+      <div class="content">
+        {{ user }}
+      </div>
+    </div>
+  </div>
+</div>

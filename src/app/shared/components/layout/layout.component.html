@@ -1,10 +1,22 @@
 <div class="container">
   <app-header></app-header>
   <main>
-    <app-navbar></app-navbar>
+    <app-navbar (conversationClicked)="onConversationSelected($event)">
+    </app-navbar>
     <ng-container header>
       <!-- <ng-content select="[header]"></ng-content> -->
-      <app-chat></app-chat>
+      <app-chat *ngIf="conversation" (userClicked)="(conversation)"></app-chat>
+      <div
+        class="chat-container"
+        *ngIf="!conversation"
+        [ngStyle]="{
+          display: 'flex',
+          'justify-content': 'center',
+          'align-items': 'center'
+        }"
+      >
+        <h2>Select any chat to get started !!</h2>
+      </div>
     </ng-container>
     <!-- <ng-container>
       <ng-content></ng-content>
