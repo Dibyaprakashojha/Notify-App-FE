@@ -1,5 +1,5 @@
-export interface userMessage {
+export interface UserMessage {
   to: string;
-  from: string;
+  from: string | undefined;
   message: string;
 }

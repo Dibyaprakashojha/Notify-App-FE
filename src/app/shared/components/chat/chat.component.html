@@ -5,12 +5,20 @@
         <mat-icon>account_box</mat-icon>
         <span> John </span>
       </button>
+      <button
+        mat-raised-button
+        color="warn"
+        (click)="subscribeToNotifications()"
+        [ngStyle]="{ 'margin-left': '90%' }"
+      >
+        Subscribe
+      </button>
     </mat-toolbar>
   </div>
   <div class="body">
     <div class="message-container" *ngFor="let message of messages">
       <div class="message">
-        <p>{{ message }}</p>
+        <p>{{ message.message }}</p>
       </div>
     </div>
   </div>
