@@ -76,6 +76,7 @@ export class ChatComponent implements OnInit {
   public userProfile: KeycloakProfile = {};
   userProfileName: string | undefined = '';
   @Input() userClicked!: UserMessage;
+  subscribeObj$!: string | undefined;
 
   constructor(
     private _authService: AuthService,
@@ -90,48 +91,17 @@ export class ChatComponent implements OnInit {
     this.userProfileName = this.userProfile.username;
     console.log('UserClicked', this.userClicked);
 
-    const registration = await navigator.serviceWorker.ready;
-    const sub = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: environment.VAPID_PUBLIC_KEY,
-    });
-    console.log('Subscription object:', JSON.stringify(sub));
-    this.connect();
+    // const registration = await navigator.serviceWorker.ready;
+    // const sub = await registration.pushManager.subscribe({
+    //   userVisibleOnly: true,
+    //   applicationServerKey: environment.VAPID_PUBLIC_KEY,
+    // });
 
-    // if (navigator.serviceWorker) {
-    //   if (navigator.serviceWorker.controller) {
-    //     console.log(
-    //       `This page is currently controlled by: ${navigator.serviceWorker.controller}`
-    //     );
-    //     navigator.serviceWorker.controller.onstatechange = () => {
-    //       console.log('state');
-    //     };
-    //   } else {
-    //     //This happens on ctrl+f5(force refresh)
-    //     console.log(
-    //       'This page is not currently controlled by a service worker.'
-    //     );
-    //     navigator.serviceWorker
-    //       .register('./ngsw-worker.js')
-    //       .then((registration) => {
-    //         console.log('Service worker registration succeeded:', registration);
-    //         window.location.reload();
-    //       }),
-    //       (error: Error) => {
-    //         console.log('Service worker registration failed:', error);
-    //       };
-    //   }
-    //   // Then, register a handler to detect when a new or
-    //   // updated service worker takes control.
-    //   navigator.serviceWorker.oncontrollerchange = function () {
-    //     console.log(
-    //       'This page is now controlled by:',
-    //       navigator.serviceWorker.controller
-    //     );
-    //   };
-    // } else {
-    //   console.log('Service workers are not supported.');
-    // }
+    // const subObj = await registration.pushManager.getSubscription();
+    // this.subscribeObj$ = JSON.stringify(sub);
+    // console.log(`registr Object:`, subObj);
+    // console.log('Subscription object:', JSON.stringify(sub));
+    this.connect();
   }
 
   setConnected(connected: boolean) {
@@ -163,6 +133,64 @@ export class ChatComponent implements OnInit {
     });
   }
 
+  /**
+   * This method is called when the user clicks on subscribe button
+   * uses a vapid public key to subscribe to the notifications services
+   * @return subscription object
+   */
+  async subscribeToNotifications() {
+    const registration = await navigator.serviceWorker.getRegistration();
+    const subscribed = !!(await registration?.pushManager.getSubscription());
+    const publicKey = this.notificationService
+      .getPublicKey()
+      .subscribe((data) => console.log(`data: ${data}`));
+    const sub = await registration?.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: JSON.stringify(publicKey),
+    });
+
+    const subObj = await registration?.pushManager.getSubscription();
+    this.subscribeObj$ = JSON.stringify(sub);
+    console.log(`registr Object:`, subObj);
+    console.log('Subscription object:', this.subscribeObj$);
+
+    // if (this.push.isEnabled) {
+    if (sub) {
+      this.push.notificationClicks.subscribe(
+        // (x) => {
+        //   console.log('logs:', x);
+        //   this.push
+        //     .requestSubscription({
+        //       serverPublicKey: environment.VAPID_PUBLIC_KEY,
+        //     })
+        //     .then(
+        (subscription) => {
+          // subscription = {
+          //   action: 'subscribe',
+          //   notification: {
+          //     title: 'Notifications',
+          //     body: 'New Message Received',
+          //     requireInteraction: true,
+          //     data: { dateOfArrival: Date.now() },
+          //     actions: [{ action: 'inbox', title: 'Go to app' }],
+          //   },
+          // };
+          console.log('Subscription log:', subscription);
+          this.notificationService
+            .getSubscription(JSON.stringify(subscription))
+            .subscribe(
+              (x: any) => console.log(x),
+              (err: any) => console.log('errors', err)
+            );
+        }
+      );
+    }
+    // .catch((err) =>
+    //   console.error('Could not subscribe to notifications', err)
+    // );
+    // });
+  }
+
   sendMessage() {
     const chatObj: UserMessage = {
       from: this.userProfileName,
@@ -173,13 +201,18 @@ export class ChatComponent implements OnInit {
     this.showMessage(chatObj);
     this.push.messages.subscribe((message) => {
       console.log(message);
+      const data = JSON.stringify(this.payload);
+      const subscription = JSON.stringify(this.subscribeObj$);
+      this.notificationService.triggerMessage(subscription, data).subscribe(
+        (x) => {
+          console.log(`Inside the sendMessage fuction`);
+          console.log(x);
+        },
+        (err) => console.log(err)
+      );
       this.snackbar.open(JSON.stringify(message));
     });
     this.newmessage = '';
-    // this.notificationService.triggerMessage(this.payload).subscribe(
-    //   (x) => console.log(x),
-    //   (err) => console.log(err)
-    // );
   }
 
   showMessage(userMsg: UserMessage) {
@@ -201,36 +234,25 @@ export class ChatComponent implements OnInit {
     },
   });
 
-  /**
-   * This method is called when the user clicks on subscribe button
-   * uses a vapid public key to subscribe to the notifications services
-   * @return subscription object
-   */
-  subscribeToNotifications = () => {
-    // if (this.push.isEnabled) {
-    this.push.notificationClicks.subscribe((x) => {
-      console.log('logs:', x);
-      this.push
-        .requestSubscription({
-          serverPublicKey: environment.VAPID_PUBLIC_KEY,
-        })
-        .then((subscription) => {
-          console.log('Subscription log:', subscription);
-          this.notificationService.subscribe(subscription).subscribe(
-            (x) => console.log(x),
-            (err) => console.log('errors', err)
-          );
-        })
-        .catch((err) =>
-          console.error('Could not subscribe to notifications', err)
-        );
-    });
+  triggerMessage = (subscription: any, data: any) => {
+    subscription = this.subscribeObj$;
+    data = this.payload;
+    this.notificationService.triggerMessage(subscription, data).subscribe(
+      (x) => console.log('Triggered:', x),
+      (err) => console.log('Error:', err)
+    );
   };
 
-  // triggerMessage = () => {
-  //   this.notificationService.triggerMessage(this.payload).subscribe(
-  //     (x) => console.log(x),
-  //     (err) => console.log(err)
-  //   );
-  // };
+  private urlB64ToUint8Array(base64String: string) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+      .replace(/\-/g, '+')
+      .replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
 }

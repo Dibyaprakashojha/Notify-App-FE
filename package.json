@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build && http-server --cors -p 4200 -c-1 dist/web-push-notifications -P http://localhost:8080/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "server": "http-server -p 4200 -c-1 dist/web-push-notifications --proxy http://localhost:8080/",
@@ -49,6 +49,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
-    "typescript": "~4.7.2"
+    "typescript": "~4.7.2",
+    "urlb64touint8array": "^1.0.3"
   }
 }
