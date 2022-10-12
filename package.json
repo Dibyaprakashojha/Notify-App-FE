@@ -4,9 +4,12 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build && http-server --cors -p 4200 -c-1 dist/web-push-notifications -P http://localhost:8080/",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "server": "http-server -p 4200 -c-1 dist/web-push-notifications --proxy http://localhost:8080/",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
@@ -21,6 +24,7 @@
     "@angular/platform-browser-dynamic": "^14.1.0",
     "@angular/router": "^14.1.0",
     "@angular/service-worker": "^14.1.0",
+    "http-server": "^14.1.1",
     "keycloak": "^1.2.0",
     "keycloak-angular": "^12.1.0",
     "keycloak-js": "^18.0.1",
@@ -45,6 +49,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
-    "typescript": "~4.7.2"
+    "typescript": "~4.7.2",
+    "urlb64touint8array": "^1.0.3"
   }
 }
